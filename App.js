@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     height: 120,
     top: -60,
     left: '50%',
-    transform: 'translateX(-50%)',
+    transform: 'translateX(-50px)',
     backgroundColor: '#F6F6F6',
     borderRadius: 16,
   },
