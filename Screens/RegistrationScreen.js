@@ -8,6 +8,7 @@ import {
   Platform,
   Image,
   ImageBackground,
+  Dimensions,
 } from 'react-native';
 import { AddAvatarIcon, RemoveAvatarIcon } from '../assets/image/Icons';
 import {
@@ -28,6 +29,9 @@ const initialStateFocus = {
   password: false,
 };
 
+const windowWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get('screen').width;
+
 export const RegistrationScreen = () => {
   console.log(Platform.OS);
   const [show, setShow] = useState(false);
@@ -38,11 +42,11 @@ export const RegistrationScreen = () => {
   const handlerSubmit = () => {
     setIsShowKeyboard(false);
     Alert.alert(JSON.stringify(user));
-    console.log(user);
+    console.log('width phone:', windowWidth, 'width app:', screenWidth);
     setUser(initialStateUser);
   };
 
-  const handleFocus = input => {
+  const handlerFocus = input => {
     setIsShowKeyboard(true);
     setIsFocus(prevState => ({
       ...prevState,
@@ -50,7 +54,7 @@ export const RegistrationScreen = () => {
     }));
   };
 
-  const handleEndEditing = input => {
+  const handlerEndEditing = input => {
     setIsShowKeyboard(false);
     setIsFocus(prevState => ({
       ...prevState,
@@ -66,28 +70,38 @@ export const RegistrationScreen = () => {
       >
         <View style={{ ...styles.form, paddingBottom: 78 }}>
           {!isShowKeyboard ? (
-            <View style={{ ...styles.boxAvatar, backgroundColor: '#F6F6F6' }}>
+            <View
+              style={{
+                ...styles.boxAvatar,
+                backgroundColor: '#F6F6F6',
+                transform: [{ translateX: 50 }],
+              }}
+            >
               <AvatarButton onPress={() => setIsShowKeyboard(true)}>
                 <AddAvatarIcon />
               </AvatarButton>
             </View>
           ) : (
-            <View style={styles.boxAvatar}>
+            <View
+              style={{
+                ...styles.boxAvatar,
+                transform: [{ translateX: 50 }],
+              }}
+            >
               <Image source={require('../assets/image/avatar.png')} />
               <AvatarButton onPress={() => setIsShowKeyboard(false)}>
                 <RemoveAvatarIcon />
               </AvatarButton>
             </View>
           )}
-          {/* {isShowKeyboard ? <RemoveAvatarIcon /> : <AddAvatarIcon />} */}
           <Text style={styles.title}>Registration</Text>
           <TextInput
             value={user.login}
             onChangeText={value =>
               setUser(prevState => ({ ...prevState, login: value }))
             }
-            onFocus={() => handleFocus('login')}
-            onEndEditing={() => handleEndEditing('login')}
+            onFocus={() => handlerFocus('login')}
+            onEndEditing={() => handlerEndEditing('login')}
             placeholder="Login"
             placeholderTextColor="#BDBDBD"
             style={{
@@ -102,8 +116,8 @@ export const RegistrationScreen = () => {
             onChangeText={value =>
               setUser(prevState => ({ ...prevState, email: value }))
             }
-            onFocus={() => handleFocus('email')}
-            onEndEditing={() => handleEndEditing('email')}
+            onFocus={() => handlerFocus('email')}
+            onEndEditing={() => handlerEndEditing('email')}
             placeholder="E-mail"
             placeholderTextColor="#BDBDBD"
             style={{
@@ -119,8 +133,8 @@ export const RegistrationScreen = () => {
               onChangeText={value =>
                 setUser(prevState => ({ ...prevState, password: value }))
               }
-              onFocus={() => handleFocus('password')}
-              onEndEditing={() => handleEndEditing('password')}
+              onFocus={() => handlerFocus('password')}
+              onEndEditing={() => handlerEndEditing('password')}
               placeholder="Password"
               placeholderTextColor="#BDBDBD"
               secureTextEntry={show ? false : true}

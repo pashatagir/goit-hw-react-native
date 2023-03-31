@@ -27,10 +27,8 @@ export const styles = StyleSheet.create({
     width: 120,
     height: 120,
     top: -60,
-    left: '50%',
-    transform: 'translateX(-50px)',
+    right: '50%',
     borderRadius: 16,
-    alignSelf: 'center',
     backgroundColor: '#F6F6F6',
   },
   buttonAddAvatar: {
