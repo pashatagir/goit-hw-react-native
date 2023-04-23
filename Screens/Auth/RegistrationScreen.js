@@ -1,27 +1,15 @@
 import { useState } from 'react';
-import {
-  Text,
-  TextInput,
-  View,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Image,
-  ImageBackground,
-  Dimensions,
-} from 'react-native';
-import { AddAvatarIcon, RemoveAvatarIcon } from '../assets/image/Icons';
-import {
-  AddAvatarButton as AvatarButton,
-  AuthButton,
-} from '../Components/Button';
-import { Container } from '../Components/Container';
-import { styles } from './styles';
+import { Text, TextInput, View, Image, ImageBackground } from 'react-native';
+import { AddAvatarIcon, RemoveAvatarIcon } from '../../Components/Icons';
+import { AddAvatarButton, MainButton } from '../../Components/Buttons';
+import { Container } from '../../Components/Container';
+import { styles } from '../../Screens/styles';
 
 const initialStateUser = {
   login: '',
   email: '',
   password: '',
+  avatar: '',
 };
 const initialStateFocus = {
   login: false,
@@ -29,21 +17,15 @@ const initialStateFocus = {
   password: false,
 };
 
-const windowWidth = Dimensions.get('window').width;
-const screenWidth = Dimensions.get('screen').width;
-
-export const RegistrationScreen = () => {
-  console.log(Platform.OS);
+export const RegistrationScreen = ({ navigation }) => {
   const [show, setShow] = useState(false);
   const [user, setUser] = useState(initialStateUser);
+  const [userPhoto, setUserPhoto] = useState(null);
   const [isFocus, setIsFocus] = useState(initialStateFocus);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
-  const handlerSubmit = () => {
-    setIsShowKeyboard(false);
-    Alert.alert(JSON.stringify(user));
-    console.log('width phone:', windowWidth, 'width app:', screenWidth);
-    setUser(initialStateUser);
+  const handlerAddAvatar = () => {
+    setUserPhoto('../../assets/image/avatar.png');
   };
 
   const handlerFocus = input => {
@@ -62,14 +44,24 @@ export const RegistrationScreen = () => {
     }));
   };
 
+  const handlerSubmit = () => {
+    setIsShowKeyboard(false);
+    setUser({ ...user, avatar: userPhoto });
+    console.log(user);
+    navigation.navigate('Home', {
+      screen: 'Posts',
+      params: { user },
+    });
+  };
+
   return (
     <Container>
-      <KeyboardAvoidingView
-        behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS == 'ios' ? -165 : -110}
+      <ImageBackground
+        source={require('../../assets/image/photo_bg.png')}
+        style={styles.imgBg}
       >
         <View style={{ ...styles.form, paddingBottom: 78 }}>
-          {!isShowKeyboard ? (
+          {!userPhoto ? (
             <View
               style={{
                 ...styles.boxAvatar,
@@ -77,9 +69,9 @@ export const RegistrationScreen = () => {
                 transform: [{ translateX: 50 }],
               }}
             >
-              <AvatarButton onPress={() => setIsShowKeyboard(true)}>
+              <AddAvatarButton onPress={handlerAddAvatar}>
                 <AddAvatarIcon />
-              </AvatarButton>
+              </AddAvatarButton>
             </View>
           ) : (
             <View
@@ -88,10 +80,10 @@ export const RegistrationScreen = () => {
                 transform: [{ translateX: 50 }],
               }}
             >
-              <Image source={require('../assets/image/avatar.png')} />
-              <AvatarButton onPress={() => setIsShowKeyboard(false)}>
+              <Image source={require('../../assets/image/avatar.png')} />
+              <AddAvatarButton onPress={() => setUserPhoto('')}>
                 <RemoveAvatarIcon />
-              </AvatarButton>
+              </AddAvatarButton>
             </View>
           )}
           <Text style={styles.title}>Registration</Text>
@@ -151,10 +143,16 @@ export const RegistrationScreen = () => {
               {show ? 'Hide' : 'Show'}
             </Text>
           </View>
-          <AuthButton onPress={handlerSubmit} text={'Registr'} />
-          <Text style={styles.link}>Already have an account? Sign in</Text>
+
+          <MainButton onPress={handlerSubmit} text={'Registr'} />
+          <Text
+            style={styles.link}
+            onPress={() => navigation.navigate('Login')}
+          >
+            Already have an account? Sign in
+          </Text>
         </View>
-      </KeyboardAvoidingView>
+      </ImageBackground>
     </Container>
   );
 };

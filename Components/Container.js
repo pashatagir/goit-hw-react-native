@@ -6,9 +6,9 @@ import {
   TouchableWithoutFeedback,
   View,
   Keyboard,
-  Image,
   Dimensions,
-  Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { fonts } from '../Screens/styles';
 
@@ -39,11 +39,13 @@ export const Container = ({ children }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Image
-          source={require('../assets/image/photo_bg.png')}
-          style={styles.imgBg}
-        />
-        {children}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS == 'ios' ? -163 : -165}
+        >
+          {children}
+        </KeyboardAvoidingView>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -53,13 +55,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'flex-end',
-  },
-  imgBg: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
   },
 });

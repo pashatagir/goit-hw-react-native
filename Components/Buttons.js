@@ -1,15 +1,27 @@
 import { Children } from 'react';
-import { StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { fonts } from '../Screens/styles';
 
-export const AuthButton = ({ text, onPress }) => {
+export const MainButton = ({ text, onPress, style }) => {
   return (
     <TouchableOpacity
-      style={styles.button}
+      style={{
+        ...styles.authBtn,
+        backgroundColor: text === 'Publish' ? '#F6F6F6' : '#FF6C00',
+        marginBottom: text === 'Publish' ? 120 : 16,
+        ...style,
+      }}
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <Text style={styles.textButton}>{text}</Text>
+      <Text
+        style={{
+          ...styles.textButton,
+          color: text === 'Publish' ? '#BDBDBD' : '#FFFFFF',
+        }}
+      >
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -26,8 +38,20 @@ export const AddAvatarButton = ({ children, onPress }) => {
   );
 };
 
+export const TrashButton = ({ children, onPress }) => {
+  return (
+    <TouchableOpacity
+      style={styles.trashButton}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      {children}
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
-  button: {
+  authBtn: {
     backgroundColor: '#FF6C00',
     borderRadius: 100,
     padding: 0,
@@ -51,5 +75,14 @@ const styles = StyleSheet.create({
     height: 25,
     borderRadius: 50,
     backgroundColor: '#ffffff',
+  },
+  trashButton: {
+    width: 70,
+    height: 40,
+    backgroundColor: '#F6F6F6',
+    borderRadius: 20,
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });

@@ -7,6 +7,12 @@ export const fonts = {
 };
 
 export const styles = StyleSheet.create({
+  // RegistrationAndLoginScreen
+  imgBg: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'flex-end',
+  },
   form: {
     position: 'relative',
     backgroundColor: '#FFFFFF',
@@ -55,6 +61,7 @@ export const styles = StyleSheet.create({
     color: '#212121',
     fontFamily: fonts.roboto400,
     fontSize: 16,
+    lineHeight: 18.75,
   },
   wrapperInput: { position: 'relative' },
   buttonShowPassword: {
@@ -62,12 +69,58 @@ export const styles = StyleSheet.create({
     top: 15,
     right: 16,
     fontSize: 16,
+    lineHeight: 18.75,
     color: '#1B4371',
   },
   link: {
     color: '#1B4371',
     fontFamily: fonts.roboto400,
     fontSize: 16,
+    lineHeight: 18.75,
     textAlign: 'center',
+  },
+  // HomeScreen
+  tabMenu: {
+    height: 83,
+    paddingTop: 9,
+    boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
+    paddingLeft: 45,
+  },
+  // CreatePostsScreen
+  imageBox: {
+    width: '100%',
+    height: 240,
+    backgroundColor: '#F6F6F6',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+    marginBottom: 8,
+  },
+  textStyle: {
+    fontFamily: fonts.roboto400,
+    fontSize: 16,
+    lineHeight: 18.75,
+    color: '#BDBDBD',
+  },
+  iconBox: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 50,
+    position: 'absolute',
+    left: '40%',
+    top: '38%',
+    justifyContent: 'center',
+  },
+  cameraIcon: {
+    alignSelf: 'center',
+  },
+  inputPost: {
+    height: 50,
+    borderBottomWidth: 1,
+    color: '#212121',
+    fontFamily: fonts.roboto400,
+    fontSize: 16,
+    lineHeight: 18.75,
   },
 });

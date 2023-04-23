@@ -1,16 +1,8 @@
 import { useState } from 'react';
-import {
-  Text,
-  TextInput,
-  View,
-  Alert,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { AuthButton } from '../Components/Button';
-import { Container } from '../Components/Container';
-import { styles } from './styles';
+import { Text, TextInput, View, ImageBackground } from 'react-native';
+import { MainButton } from '../../Components/Buttons';
+import { Container } from '../../Components/Container';
+import { styles } from '../styles';
 
 const initialStateUser = {
   email: '',
@@ -22,40 +14,54 @@ const initialStateFocus = {
   password: false,
 };
 
-export const LoginScreen = () => {
-  console.log(Platform.OS);
+export const LoginScreen = ({ navigation }) => {
   const [show, setShow] = useState(false);
   const [user, setUser] = useState(initialStateUser);
   const [isFocus, setIsFocus] = useState(initialStateFocus);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const handlerFocus = input => {
+    setIsShowKeyboard(true);
+    setIsFocus(prevState => ({
+      ...prevState,
+      [input]: true,
+    }));
+  };
+
+  const handlerEndEditing = input => {
+    setIsShowKeyboard(false);
+    setIsFocus(prevState => ({
+      ...prevState,
+      [input]: false,
+    }));
+  };
 
   const handlerSubmit = () => {
-    Alert.alert(JSON.stringify(user));
-    console.log(user);
+    setIsShowKeyboard(false);
     setUser(initialStateUser);
+    navigation.navigate('Home', {
+      screen: 'Posts',
+      user,
+    });
   };
 
   return (
     <Container>
-      <KeyboardAvoidingView
-        behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS == 'ios' ? -220 : -59}
+      <ImageBackground
+        source={require('../../assets/image/photo_bg.png')}
+        style={styles.imgBg}
       >
-        <View style={{ ...styles.form, paddingBottom: 129 }}>
+        <View
+          style={{ ...styles.form, paddingBottom: isShowKeyboard ? 79 : 129 }}
+        >
           <Text style={{ ...styles.title, marginTop: 32 }}>Sign in</Text>
           <TextInput
             value={user.email}
             onChangeText={value =>
               setUser(prevState => ({ ...prevState, email: value }))
             }
-            onFocus={() =>
-              setIsFocus(prevState => ({
-                ...prevState,
-                email: true,
-              }))
-            }
-            onEndEditing={() =>
-              setIsFocus(prevState => ({ ...prevState, email: false }))
-            }
+            onFocus={() => handlerFocus('email')}
+            onEndEditing={() => handlerEndEditing('email')}
             placeholder="E-mail"
             placeholderTextColor="#BDBDBD"
             style={{
@@ -71,15 +77,8 @@ export const LoginScreen = () => {
               onChangeText={value =>
                 setUser(prevState => ({ ...prevState, password: value }))
               }
-              onFocus={() =>
-                setIsFocus(prevState => ({
-                  ...prevState,
-                  password: true,
-                }))
-              }
-              onEndEditing={() =>
-                setIsFocus(prevState => ({ ...prevState, password: false }))
-              }
+              onFocus={() => handlerFocus('password')}
+              onEndEditing={() => handlerEndEditing('password')}
               placeholder="Password"
               placeholderTextColor="#BDBDBD"
               secureTextEntry={show ? false : true}
@@ -96,10 +95,19 @@ export const LoginScreen = () => {
               {show ? 'Hide' : 'Show'}
             </Text>
           </View>
-          <AuthButton onPress={handlerSubmit} text={'Sign in'} />
-          <Text style={styles.link}>I don't have an account! Sign up now</Text>
+          {!isShowKeyboard && (
+            <>
+              <MainButton onPress={handlerSubmit} text={'Sign in'} />
+              <Text
+                style={styles.link}
+                onPress={() => navigation.navigate('Registration')}
+              >
+                I don't have an account! Sign up now
+              </Text>
+            </>
+          )}
         </View>
-      </KeyboardAvoidingView>
+      </ImageBackground>
     </Container>
   );
 };
