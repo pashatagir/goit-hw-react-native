@@ -2,15 +2,14 @@ import { useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import {
-  StyleSheet,
   TouchableWithoutFeedback,
-  View,
+  SafeAreaView,
   Keyboard,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { fonts } from '../Screens/styles';
+import { fonts } from '../assets/fonts/fonts';
 
 export const Container = ({ children }) => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window').width);
@@ -38,7 +37,13 @@ export const Container = ({ children }) => {
   }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          width: dimensions,
+        }}
+      >
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
@@ -46,14 +51,7 @@ export const Container = ({ children }) => {
         >
           {children}
         </KeyboardAvoidingView>
-      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});

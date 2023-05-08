@@ -1,6 +1,5 @@
-import { Children } from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { fonts } from '../Screens/styles';
+import { fonts } from '../assets/fonts/fonts';
 
 export const MainButton = ({ text, onPress, style }) => {
   return (
@@ -30,6 +29,18 @@ export const AddAvatarButton = ({ children, onPress }) => {
   return (
     <TouchableOpacity
       style={styles.buttonAddAvatar}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      {children}
+    </TouchableOpacity>
+  );
+};
+
+export const AddComentButton = ({ children, onPress }) => {
+  return (
+    <TouchableOpacity
+      style={styles.buttonAddComment}
       onPress={onPress}
       activeOpacity={0.7}
     >
@@ -84,5 +95,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
+  },
+  buttonAddComment: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF6C00',
+    borderRadius: 100,
+    width: 34,
+    height: 34,
   },
 });

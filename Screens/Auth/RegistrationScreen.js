@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, TextInput, View, Image, ImageBackground } from 'react-native';
 import { AddAvatarIcon, RemoveAvatarIcon } from '../../Components/Icons';
 import { AddAvatarButton, MainButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
-import { styles } from '../../Screens/styles';
+import { authStyles } from './authStyles';
 
 const initialStateUser = {
   login: '',
@@ -28,6 +28,10 @@ export const RegistrationScreen = ({ navigation }) => {
     setUserPhoto('../../assets/image/avatar.png');
   };
 
+  useEffect(() => {
+    setUser(prevState => ({ ...prevState, avatar: userPhoto }));
+  }, [userPhoto]);
+
   const handlerFocus = input => {
     setIsShowKeyboard(true);
     setIsFocus(prevState => ({
@@ -46,8 +50,7 @@ export const RegistrationScreen = ({ navigation }) => {
 
   const handlerSubmit = () => {
     setIsShowKeyboard(false);
-    setUser({ ...user, avatar: userPhoto });
-    console.log(user);
+    setUser(user);
     navigation.navigate('Home', {
       screen: 'Posts',
       params: { user },
@@ -58,13 +61,13 @@ export const RegistrationScreen = ({ navigation }) => {
     <Container>
       <ImageBackground
         source={require('../../assets/image/photo_bg.png')}
-        style={styles.imgBg}
+        style={authStyles.imgBg}
       >
-        <View style={{ ...styles.form, paddingBottom: 78 }}>
+        <View style={{ ...authStyles.form, paddingBottom: 78 }}>
           {!userPhoto ? (
             <View
               style={{
-                ...styles.boxAvatar,
+                ...authStyles.boxAvatar,
                 backgroundColor: '#F6F6F6',
                 transform: [{ translateX: 50 }],
               }}
@@ -76,7 +79,7 @@ export const RegistrationScreen = ({ navigation }) => {
           ) : (
             <View
               style={{
-                ...styles.boxAvatar,
+                ...authStyles.boxAvatar,
                 transform: [{ translateX: 50 }],
               }}
             >
@@ -86,7 +89,7 @@ export const RegistrationScreen = ({ navigation }) => {
               </AddAvatarButton>
             </View>
           )}
-          <Text style={styles.title}>Registration</Text>
+          <Text style={authStyles.title}>Registration</Text>
           <TextInput
             value={user.login}
             onChangeText={value =>
@@ -97,7 +100,7 @@ export const RegistrationScreen = ({ navigation }) => {
             placeholder="Login"
             placeholderTextColor="#BDBDBD"
             style={{
-              ...styles.input,
+              ...authStyles.input,
               marginBottom: 10,
               borderColor: isFocus.login ? '#FF6C00' : '#E8E8E8',
               backgroundColor: isFocus.login ? '#FFFFFF' : '#F6F6F6',
@@ -113,13 +116,13 @@ export const RegistrationScreen = ({ navigation }) => {
             placeholder="E-mail"
             placeholderTextColor="#BDBDBD"
             style={{
-              ...styles.input,
+              ...authStyles.input,
               marginBottom: 10,
               borderColor: isFocus.email ? '#FF6C00' : '#E8E8E8',
               backgroundColor: isFocus.email ? '#FFFFFF' : '#F6F6F6',
             }}
           />
-          <View style={{ ...styles.wrapperInput, marginBottom: 43 }}>
+          <View style={{ ...authStyles.wrapperInput, marginBottom: 43 }}>
             <TextInput
               value={user.password}
               onChangeText={value =>
@@ -131,13 +134,13 @@ export const RegistrationScreen = ({ navigation }) => {
               placeholderTextColor="#BDBDBD"
               secureTextEntry={show ? false : true}
               style={{
-                ...styles.input,
+                ...authStyles.input,
                 borderColor: isFocus.password ? '#FF6C00' : '#E8E8E8',
                 backgroundColor: isFocus.password ? '#FFFFFF' : '#F6F6F6',
               }}
             />
             <Text
-              style={styles.buttonShowPassword}
+              style={authStyles.buttonShowPassword}
               onPress={() => setShow(!show)}
             >
               {show ? 'Hide' : 'Show'}
@@ -146,7 +149,7 @@ export const RegistrationScreen = ({ navigation }) => {
 
           <MainButton onPress={handlerSubmit} text={'Registr'} />
           <Text
-            style={styles.link}
+            style={authStyles.link}
             onPress={() => navigation.navigate('Login')}
           >
             Already have an account? Sign in

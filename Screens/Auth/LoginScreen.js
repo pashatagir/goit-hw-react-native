@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Text, TextInput, View, ImageBackground } from 'react-native';
 import { MainButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
-import { styles } from '../styles';
+import { authStyles } from './authStyles';
 
 const initialStateUser = {
   email: '',
@@ -49,12 +49,15 @@ export const LoginScreen = ({ navigation }) => {
     <Container>
       <ImageBackground
         source={require('../../assets/image/photo_bg.png')}
-        style={styles.imgBg}
+        style={authStyles.imgBg}
       >
         <View
-          style={{ ...styles.form, paddingBottom: isShowKeyboard ? 79 : 129 }}
+          style={{
+            ...authStyles.form,
+            paddingBottom: isShowKeyboard ? 79 : 129,
+          }}
         >
-          <Text style={{ ...styles.title, marginTop: 32 }}>Sign in</Text>
+          <Text style={{ ...authStyles.title, marginTop: 32 }}>Sign in</Text>
           <TextInput
             value={user.email}
             onChangeText={value =>
@@ -65,13 +68,13 @@ export const LoginScreen = ({ navigation }) => {
             placeholder="E-mail"
             placeholderTextColor="#BDBDBD"
             style={{
-              ...styles.input,
+              ...authStyles.input,
               marginBottom: 10,
               borderColor: isFocus.email ? '#FF6C00' : '#E8E8E8',
               backgroundColor: isFocus.email ? '#FFFFFF' : '#F6F6F6',
             }}
           />
-          <View style={{ ...styles.wrapperInput, marginBottom: 43 }}>
+          <View style={{ ...authStyles.wrapperInput, marginBottom: 43 }}>
             <TextInput
               value={user.password}
               onChangeText={value =>
@@ -83,29 +86,25 @@ export const LoginScreen = ({ navigation }) => {
               placeholderTextColor="#BDBDBD"
               secureTextEntry={show ? false : true}
               style={{
-                ...styles.input,
+                ...authStyles.input,
                 borderColor: isFocus.password ? '#FF6C00' : '#E8E8E8',
                 backgroundColor: isFocus.password ? '#FFFFFF' : '#F6F6F6',
               }}
             />
             <Text
-              style={styles.buttonShowPassword}
+              style={authStyles.buttonShowPassword}
               onPress={() => setShow(!show)}
             >
               {show ? 'Hide' : 'Show'}
             </Text>
           </View>
-          {!isShowKeyboard && (
-            <>
-              <MainButton onPress={handlerSubmit} text={'Sign in'} />
-              <Text
-                style={styles.link}
-                onPress={() => navigation.navigate('Registration')}
-              >
-                I don't have an account! Sign up now
-              </Text>
-            </>
-          )}
+          <MainButton onPress={handlerSubmit} text={'Sign in'} />
+          <Text
+            style={authStyles.link}
+            onPress={() => navigation.navigate('Registration')}
+          >
+            I don't have an account! Sign up now
+          </Text>
         </View>
       </ImageBackground>
     </Container>

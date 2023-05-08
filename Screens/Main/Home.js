@@ -1,8 +1,6 @@
-import React from 'react';
 import { PostsScreen } from './PostsScreen';
 import { CreatePostsScreen } from './CreatePostsScreen';
 import { ProfileScreen } from './ProfileScreen';
-import { styles } from '../styles';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   ArrowLeftIcon,
@@ -11,7 +9,7 @@ import {
   PlusIcon,
   UserIcon,
 } from '../../Components/Icons';
-import { CommentsScreen } from './CommentsScreen';
+import { CommentsScreen } from '../Second/CommentsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,7 +20,12 @@ export const Home = ({ navigation }) => {
       screenOptions={{
         headerShown: true,
         tabBarLabel: () => null,
-        tabBarStyle: styles.tabMenu,
+        tabBarStyle: {
+          height: 83,
+          paddingTop: 9,
+          boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
+          paddingLeft: 45,
+        },
       }}
     >
       <Tab.Screen
@@ -44,7 +47,6 @@ export const Home = ({ navigation }) => {
           tabBarIcon: ({ focused }) => <PlusIcon focused={focused} />,
           headerTitleAlign: 'center',
           headerTitle: 'Create post',
-          backBehavior: 'order',
           headerLeft: () => (
             <ArrowLeftIcon onPress={() => navigation.navigate('Posts')} />
           ),
@@ -55,17 +57,10 @@ export const Home = ({ navigation }) => {
       />
       <Tab.Screen
         name="Comments"
-        component={CommentsScreen}
+        component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => <UserIcon focused={focused} />,
-          headerTitleAlign: 'center',
-          headerTitle: 'Comments',
-          backBehavior: 'order',
-          headerLeft: () => (
-            <ArrowLeftIcon onPress={() => navigation.navigate('Posts')} />
-          ),
-          headerLeftContainerStyle: { paddingLeft: 16 },
-          tabBarStyle: { display: 'none' },
+          headerShown: false,
         }}
       />
     </Tab.Navigator>

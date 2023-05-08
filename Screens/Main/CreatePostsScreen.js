@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Text, TextInput, View, Dimensions } from 'react-native';
-import { styles } from '../styles';
+import { Text, TextInput, View, Dimensions, StyleSheet } from 'react-native';
 import { Container } from '../../Components/Container';
 import { CameraIcon, MapPinIcon, TrashIcon } from '../../Components/Icons';
 import { MainButton, TrashButton } from '../../Components/Buttons';
+import { fonts } from '../../assets/fonts/fonts';
 
 const initialStatePosts = {
   name: '',
@@ -48,10 +48,7 @@ export const CreatePostsScreen = ({ navigation }) => {
     setIsShowKeyboard(false);
     setPosts(initialStatePosts);
 
-    // navigation.navigate('Home', {
-    //   screen: 'Posts',
-    //   posts,
-    // });
+    navigation.navigate('CommentsScreen');
   };
 
   const handlerTrash = () => {
@@ -120,3 +117,42 @@ export const CreatePostsScreen = ({ navigation }) => {
     </Container>
   );
 };
+
+export const styles = StyleSheet.create({
+  imageBox: {
+    width: '100%',
+    height: 240,
+    backgroundColor: '#F6F6F6',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+    marginBottom: 8,
+  },
+  textStyle: {
+    fontFamily: fonts.roboto400,
+    fontSize: 16,
+    lineHeight: 18.75,
+    color: '#BDBDBD',
+  },
+  iconBox: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 50,
+    position: 'absolute',
+    left: '40%',
+    top: '38%',
+    justifyContent: 'center',
+  },
+  cameraIcon: {
+    alignSelf: 'center',
+  },
+  inputPost: {
+    height: 50,
+    borderBottomWidth: 1,
+    color: '#212121',
+    fontFamily: fonts.roboto400,
+    fontSize: 16,
+    lineHeight: 18.75,
+  },
+});

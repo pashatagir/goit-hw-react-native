@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image } from 'react-native';
 import { Container } from '../../Components/Container';
-import { fonts } from '../styles';
+import { fonts } from '../../assets/fonts/fonts';
 
 export const PostsScreen = ({ route }) => {
   const userData = route.params;
+
   return (
     <Container>
       <View
