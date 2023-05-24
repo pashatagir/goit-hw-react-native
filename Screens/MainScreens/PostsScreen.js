@@ -52,9 +52,6 @@ export const PostsScreen = ({ navigation, route }) => {
     }
   }, [route.params]);
 
-  console.log('route.params:', route.params);
-  console.log('posts:', posts);
-
   return (
     <Container>
       <View

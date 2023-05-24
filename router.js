@@ -5,7 +5,6 @@ import { Home } from './Screens/MainScreens/Home';
 import { NavigationContainer } from '@react-navigation/native';
 import { CommentsScreen } from './Screens/NestedScreens/CommentsScreen';
 import { MapScreen } from './Screens/NestedScreens/MapScreen';
-import { CameraScreen } from './Screens/NestedScreens/CameraScreen';
 
 const AuthStack = createStackNavigator();
 
@@ -19,7 +18,6 @@ export const useRoute = () => {
         <AuthStack.Screen name="Home" component={Home} />
         <AuthStack.Screen name="Map" component={MapScreen} />
         <AuthStack.Screen name="Comments" component={CommentsScreen} />
-        <AuthStack.Screen name="Camera" component={CameraScreen} />
       </AuthStack.Navigator>
     </NavigationContainer>
   );

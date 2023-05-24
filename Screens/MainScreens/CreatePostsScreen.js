@@ -9,9 +9,17 @@ import {
   Image,
 } from 'react-native';
 import { Container } from '../../Components/Container';
-import { CameraIcon, MapPinIcon, TrashIcon } from '../../Components/Icons';
+import {
+  CameraIcon,
+  MapPinIcon,
+  TrashIcon,
+  FlipCameraIcon,
+} from '../../Components/Icons';
 import { MainButton, TrashButton } from '../../Components/Buttons';
 import { fonts } from '../../assets/fonts/fonts';
+import { Camera } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
 
 const initialStatePost = {
   id: '',
@@ -32,17 +40,41 @@ export const CreatePostsScreen = ({ navigation, route }) => {
   const [isFocus, setIsFocus] = useState(initialStateFocus);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [post, setPost] = useState(initialStatePost);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
 
   useEffect(() => {
-    if (route.params) {
-      setPost(prevState => ({
-        ...prevState,
-        id: Math.floor(Math.random() * 1675477215).toString(16),
-        image: route.params?.photo,
-        location: route.params?.location,
-      }));
-    }
-  }, [route.params]);
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+      const statusLocation = await Location.requestForegroundPermissionsAsync();
+
+      if (status === 'granted' && statusLocation.status === 'granted') {
+        setHasPermission(true);
+      }
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return (
+      <Text>Grant permission to camera and location for further use!</Text>
+    );
+  }
+
+  const takePhoto = async () => {
+    const { uri } = await cameraRef.takePictureAsync();
+    await MediaLibrary.createAssetAsync(uri);
+    const { coords } = await Location.getCurrentPositionAsync();
+    setPost(prevState => ({
+      ...prevState,
+      image: uri,
+      location: coords,
+    }));
+  };
 
   const handlerFocus = input => {
     setIsShowKeyboard(true);
@@ -97,33 +129,54 @@ export const CreatePostsScreen = ({ navigation, route }) => {
               }}
             />
             <TouchableOpacity
-              onPress={() => navigation.navigate('Camera')}
+              onPress={takePhoto}
               style={{
                 ...styles.iconBox,
                 backgroundColor: '#ffffff30',
+                borderColor: 'transparent',
               }}
             >
               <CameraIcon style={styles.cameraIcon} />
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity
-            style={styles.imageBox}
-            onPress={() => navigation.navigate('Camera')}
+          <View
+            styles={{
+              flex: 1,
+            }}
           >
-            <View
-              style={{
-                ...styles.iconBox,
-                backgroundColor: '#ffffff',
-              }}
-            >
-              <CameraIcon style={styles.cameraIcon} />
-            </View>
-          </TouchableOpacity>
+            <Camera type={type} ref={setCameraRef} style={styles.imageBox}>
+              <View style={styles.iconsContainer}>
+                <TouchableOpacity
+                  onPress={takePhoto}
+                  style={{ ...styles.iconBox, borderColor: '#E8E8E8' }}
+                >
+                  <CameraIcon style={{ alignSelf: 'center' }} />
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={styles.flipIconBox}
+                onPress={() => {
+                  setType(
+                    type === Camera.Constants.Type.back
+                      ? Camera.Constants.Type.front
+                      : Camera.Constants.Type.back
+                  );
+                }}
+              >
+                <FlipCameraIcon style={styles.cameraIcon} />
+              </TouchableOpacity>
+            </Camera>
+          </View>
         )}
         <Text
           style={styles.textStyle}
-          onPress={() => navigation.navigate('Camera')}
+          onPress={() =>
+            setPost(prevState => ({
+              ...prevState,
+              image: '',
+            }))
+          }
         >
           {image ? 'Edit photo' : 'Download photo'}
         </Text>
@@ -210,6 +263,12 @@ export const styles = StyleSheet.create({
     lineHeight: 18.75,
     color: '#BDBDBD',
   },
+  iconsContainer: {
+    flex: 0.95,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+  },
   iconBox: {
     width: 60,
     height: 60,
@@ -217,11 +276,24 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     left: '40%',
     top: '38%',
+    borderWidth: 1,
+    justifyContent: 'center',
+  },
+  flipIconBox: {
+    width: 40,
+    height: 40,
+    position: 'absolute',
+    top: '80%',
+    left: '85%',
+    borderWidth: 1,
+    borderRadius: 50,
+    borderColor: '#E8E8E8',
     justifyContent: 'center',
   },
   cameraIcon: {
     alignSelf: 'center',
   },
+
   inputPost: {
     height: 50,
     borderBottomWidth: 1,

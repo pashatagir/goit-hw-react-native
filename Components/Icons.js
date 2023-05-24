@@ -291,8 +291,8 @@ export const CommentOnIcon = props => {
 export const FlipCameraIcon = props => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
-    width={20}
-    height={20}
+    width={16}
+    height={16}
     fill="#E8E8E8"
     viewBox="0 0 32 32"
     {...props}
