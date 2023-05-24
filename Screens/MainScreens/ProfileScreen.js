@@ -21,52 +21,44 @@ import { AddAvatarButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
 import { fonts } from '../../assets/fonts/fonts';
 
-const initialStateUser = {
-  login: '',
-  email: '',
-  password: '',
-  avatar: '',
-};
-const initialStateFocus = {
-  login: false,
-  email: false,
-  password: false,
-};
-
-const initStatePost = [
+const initStatePosts = [
   {
     id: '1',
-    image: '../../assets/image/forest.jpg',
+    image:
+      'http://www.golos.com.ua/images_article/orig/2020/08/270820/zakarpatlis.jpg',
     nameLocation: 'Forest',
-    location: 'Ukraine',
+    descriptionLocation: 'Ukraine',
+    location: { latitude: 48.383022, longitude: 31.1828699 },
     commentsCount: 8,
     likesCount: 153,
   },
   {
     id: '2',
-    image: '../../assets/image/sunset.jpg',
+    image: 'http://mixo.com.ua/wp-content/uploads/2019/02/chernoe_more.jpg',
     nameLocation: 'Sunset on Black Sea',
-    location: 'Ukraine',
+    descriptionLocation: 'Ukraine',
+    location: { latitude: 44.95719, longitude: 34.11079 },
     commentsCount: 10,
     likesCount: 200,
   },
   {
     id: '3',
-    image: '../../assets/image/old_house.jpg',
+    image:
+      'https://www.oldhousedreams.com/wp-content/uploads/2021/04/13-spoletoitaly.jpg',
     nameLocation: 'Old house in Venice',
-    location: 'Italy',
+    descriptionLocation: 'Italy',
+    location: { latitude: 41.29246, longitude: 12.5736108 },
     commentsCount: 50,
     likesCount: 200,
   },
 ];
 
-export const ProfileScreen = ({ navigation }) => {
-  const [post, setPost] = useState(initStatePost);
+export const ProfileScreen = ({ route, navigation }) => {
+  const [posts, setPosts] = useState(initStatePosts);
   const [userPhoto, setUserPhoto] = useState('../../assets/image/avatar.png');
 
   const handlerAddAvatar = () => {
     setUserPhoto('../../assets/image/avatar.png');
-    console.log(post);
   };
 
   return (
@@ -105,17 +97,17 @@ export const ProfileScreen = ({ navigation }) => {
             </View>
           )}
           <Text style={profileStyles.title}>Natali Romanova</Text>
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1, paddingBottom: 83 }}>
             <FlatList
-              data={post}
+              data={posts}
               renderItem={({ item, index }) => (
-                <View>
+                <View style={{ marginTop: 32 }}>
                   <Image
                     source={{ uri: item.image }}
                     style={{ width: '100%', height: 240, borderRadius: 8 }}
                   />
                   <Text style={{ fontSize: 16, color: '#000' }}>
-                    {item.name}
+                    {item.nameLocation}
                   </Text>
                   <View
                     style={{
@@ -130,21 +122,44 @@ export const ProfileScreen = ({ navigation }) => {
                       }}
                     >
                       <TouchableOpacity
-                        style={{ flexDirection: 'row', marginRight: 24 }}
+                        style={{
+                          flexDirection: 'row',
+                          marginRight: 24,
+                          alignItems: 'center',
+                        }}
+                        onPress={() => {
+                          navigation.navigate('Comments');
+                        }}
                       >
                         <CommentOnIcon />
                         <Text style={{ marginLeft: 6 }}>
                           {item.commentsCount}
                         </Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={{ flexDirection: 'row' }}>
+                      <TouchableOpacity
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
+                      >
                         <LikeOnIcon />
                         <Text style={{ marginLeft: 6 }}>{item.likesCount}</Text>
                       </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                      onPress={() =>
+                        navigation.navigate('Map', {
+                          data: item.location,
+                        })
+                      }
+                    >
                       <MapPinIcon />
-                      <Text style={{ marginLeft: 6 }}>{item.location}</Text>
+                      <Text
+                        style={{
+                          marginLeft: 6,
+                          textDecorationLine: 'underline',
+                        }}
+                      >
+                        {item.descriptionLocation}
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -173,6 +188,7 @@ export const profileStyles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     paddingHorizontal: 16,
+    marginBottom: 106,
   },
   title: {
     color: '#212121',
@@ -180,6 +196,7 @@ export const profileStyles = StyleSheet.create({
     fontFamily: fonts.roboto700,
     fontSize: 30,
     marginTop: 46,
+    marginBottom: 32,
   },
   boxAvatar: {
     position: 'absolute',

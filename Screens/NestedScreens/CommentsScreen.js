@@ -9,11 +9,12 @@ import {
   TextInput,
   View,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 import { fonts } from '../../assets/fonts/fonts';
 import { Container } from '../../Components/Container';
 import { AddComentButton } from '../../Components/Buttons';
-import { AddCommentIcon } from '../../Components/Icons';
+import { AddCommentIcon, ArrowLeftIcon } from '../../Components/Icons';
 import { format } from 'date-fns';
 
 const initStateComments = [
@@ -76,6 +77,18 @@ export const CommentsScreen = ({ navigation }) => {
     <Container>
       <View
         style={{
+          marginLeft: 16,
+          flexDirection: 'row',
+          alignSelf: 'flex-start',
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.navigate('Posts')}>
+          <ArrowLeftIcon />
+        </TouchableOpacity>
+        <Text>Comments</Text>
+      </View>
+      <View
+        style={{
           paddingHorizontal: 16,
           paddingTop: 32,
         }}
@@ -86,54 +99,56 @@ export const CommentsScreen = ({ navigation }) => {
         />
 
         {!isShowKeyboard && (
-          <FlatList
-            data={comments}
-            renderItem={({ item, index }) => (
-              <View
-                style={{
-                  paddingLeft: index % 2 === 0 ? 44 : 0,
-                  paddingRight: index % 2 === 0 ? 0 : 44,
-                  marginTop: 24,
-                }}
-              >
-                {index % 2 === 0 ? (
-                  <Image
-                    style={{
-                      ...avatar,
-                      alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
-                    }}
-                    source={require('../../assets/image/ellipse.png')}
-                  />
-                ) : (
-                  <Image
-                    style={{
-                      ...avatar,
-                      alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
-                    }}
-                    source={require('../../assets/image/ellipseN.png')}
-                  />
-                )}
+          <SafeAreaView>
+            <FlatList
+              data={comments}
+              renderItem={({ item, index }) => (
                 <View
                   style={{
-                    ...wrapper,
-                    borderTopRightRadius: index % 2 === 0 ? 8 : 0,
-                    borderTopLeftRadius: index % 2 === 0 ? 0 : 8,
+                    paddingLeft: index % 2 === 0 ? 44 : 0,
+                    paddingRight: index % 2 === 0 ? 0 : 44,
+                    marginTop: 24,
                   }}
                 >
-                  <Text style={textStyle}>{item.text}</Text>
-                  <Text
+                  {index % 2 === 0 ? (
+                    <Image
+                      style={{
+                        ...avatar,
+                        alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
+                      }}
+                      source={require('../../assets/image/ellipse.png')}
+                    />
+                  ) : (
+                    <Image
+                      style={{
+                        ...avatar,
+                        alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
+                      }}
+                      source={require('../../assets/image/ellipseN.png')}
+                    />
+                  )}
+                  <View
                     style={{
-                      ...dateStyle,
-                      alignSelf: index % 2 === 0 ? 'flex-end' : 'flex-start',
+                      ...wrapper,
+                      borderTopRightRadius: index % 2 === 0 ? 8 : 0,
+                      borderTopLeftRadius: index % 2 === 0 ? 0 : 8,
                     }}
                   >
-                    {item.date}
-                  </Text>
+                    <Text style={textStyle}>{item.text}</Text>
+                    <Text
+                      style={{
+                        ...dateStyle,
+                        alignSelf: index % 2 === 0 ? 'flex-end' : 'flex-start',
+                      }}
+                    >
+                      {item.date}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            )}
-            keyExtractor={item => item.id}
-          />
+              )}
+              keyExtractor={item => item.id}
+            />
+          </SafeAreaView>
         )}
         <View
           style={{

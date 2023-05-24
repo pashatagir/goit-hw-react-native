@@ -9,7 +9,7 @@ import {
   PlusIcon,
   UserIcon,
 } from '../../Components/Icons';
-import { CommentsScreen } from '../Second/CommentsScreen';
+import { MapScreen } from '../NestedScreens/MapScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -56,7 +56,7 @@ export const Home = ({ navigation }) => {
         }}
       />
       <Tab.Screen
-        name="Comments"
+        name="Profile"
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => <UserIcon focused={focused} />,
