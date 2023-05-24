@@ -8,56 +8,63 @@ import {
 import { Container } from '../../Components/Container';
 import { ArrowLeftIcon } from '../../Components/Icons';
 import MapView, { Marker } from 'react-native-maps';
+import { fonts } from '../../assets/fonts/fonts';
 
 export const MapScreen = ({ navigation, route }) => {
   const { longitude, latitude } = route.params?.data;
   return (
     <Container>
-      <View style={styles.container}>
-        <View
-          style={{
-            marginTop: 88,
-            marginLeft: 16,
-            flexDirection: 'row',
-            alignSelf: 'flex-start',
-          }}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Posts')}
+          style={styles.button}
         >
-          <TouchableOpacity onPress={() => navigation.navigate('Posts')}>
-            <ArrowLeftIcon />
-          </TouchableOpacity>
-          <Text>Map</Text>
-        </View>
-
-        <MapView
-          style={styles.mapStyle}
-          region={{
-            latitude,
-            longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          mapType="standard"
-          // minZoomLevel={15}
-          onMapReady={() => console.log('Map is ready')}
-          onRegionChange={() => console.log('Region change')}
-        >
-          <Marker
-            title="I am here"
-            coordinate={{ latitude, longitude }}
-            description="Hello"
-          />
-        </MapView>
+          <ArrowLeftIcon />
+        </TouchableOpacity>
+        <Text style={styles.title}>Map</Text>
       </View>
+      <MapView
+        style={styles.mapStyle}
+        region={{
+          latitude,
+          longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        mapType="standard"
+        onMapReady={() => console.log('Map is ready')}
+        onRegionChange={() => console.log('Region change')}
+      >
+        <Marker
+          title="I am here"
+          coordinate={{ latitude, longitude }}
+          description="Hello"
+        />
+      </MapView>
     </Container>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
+  header: {
+    marginTop: 20,
+    height: 62,
+    width: '100%',
+    borderBottomWidth: 1,
+    borderBottomColor: '#BDBDBD',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  button: {
+    position: 'absolute',
+    left: 16,
+  },
+  title: {
+    fontFamily: fonts.roboto500,
+    fontSize: 17,
+    letterSpacing: -0.408,
+    lineHeight: 22,
   },
   mapStyle: {
     width: Dimensions.get('window').width,

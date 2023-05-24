@@ -97,7 +97,7 @@ export const ProfileScreen = ({ route, navigation }) => {
             </View>
           )}
           <Text style={profileStyles.title}>Natali Romanova</Text>
-          <SafeAreaView style={{ flex: 1, paddingBottom: 83 }}>
+          <SafeAreaView style={{ flex: 1, paddingBottom: 123 }}>
             <FlatList
               data={posts}
               renderItem={({ item, index }) => (

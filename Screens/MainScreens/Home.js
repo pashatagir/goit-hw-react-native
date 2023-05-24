@@ -23,8 +23,10 @@ export const Home = ({ navigation }) => {
         tabBarStyle: {
           height: 83,
           paddingTop: 9,
+          paddingHorizontal: 16,
           boxShadow: '0px -0.5px 0px rgba(0, 0, 0, 0.3)',
           paddingLeft: 45,
+          position: 'absolute',
         },
       }}
     >

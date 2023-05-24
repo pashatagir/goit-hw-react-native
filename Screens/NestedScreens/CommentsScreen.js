@@ -8,7 +8,6 @@ import {
   Text,
   TextInput,
   View,
-  StatusBar,
   TouchableOpacity,
 } from 'react-native';
 import { fonts } from '../../assets/fonts/fonts';
@@ -68,24 +67,21 @@ export const CommentsScreen = ({ navigation }) => {
       text: text.trim(),
       date: format(Date.now(), 'dd MMMM yyy | kk:mm'),
     };
-    setComments([...comments, newComment]);
+    setComments(prevState => [...prevState, newComment]);
     setText('');
     Keyboard.dismiss();
   };
 
   return (
     <Container>
-      <View
-        style={{
-          marginLeft: 16,
-          flexDirection: 'row',
-          alignSelf: 'flex-start',
-        }}
-      >
-        <TouchableOpacity onPress={() => navigation.navigate('Posts')}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Posts')}
+          style={styles.button}
+        >
           <ArrowLeftIcon />
         </TouchableOpacity>
-        <Text>Comments</Text>
+        <Text style={styles.title}>Comments</Text>
       </View>
       <View
         style={{
@@ -217,4 +213,24 @@ const styles = StyleSheet.create({
     lineHeight: 18.75,
   },
   wrapperInput: { position: 'relative' },
+  header: {
+    marginTop: 20,
+    height: 62,
+    width: '100%',
+    borderBottomWidth: 1,
+    borderBottomColor: '#BDBDBD',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  button: {
+    position: 'absolute',
+    left: 16,
+  },
+  title: {
+    fontFamily: fonts.roboto500,
+    fontSize: 17,
+    letterSpacing: -0.408,
+    lineHeight: 22,
+  },
 });
