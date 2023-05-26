@@ -20,6 +20,8 @@ import {
 import { AddAvatarButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
 import { fonts } from '../../assets/fonts/fonts';
+import { useDispatch } from 'react-redux';
+import { authLogout } from '../../redux/auth/authOperations';
 
 const initStatePosts = [
   {
@@ -55,6 +57,7 @@ const initStatePosts = [
 
 export const ProfileScreen = ({ route, navigation }) => {
   const [posts, setPosts] = useState(initStatePosts);
+  const dispatch = useDispatch();
   const [userPhoto, setUserPhoto] = useState('../../assets/image/avatar.png');
 
   const handlerAddAvatar = () => {
@@ -69,7 +72,11 @@ export const ProfileScreen = ({ route, navigation }) => {
       >
         <View style={profileStyles.form}>
           <View style={{ alignItems: 'flex-end', marginTop: 22 }}>
-            <LogOutIcon onPress={() => navigation.navigate('Login')} />
+            <LogOutIcon
+              onPress={() => {
+                dispatch(authLogout());
+              }}
+            />
           </View>
           {userPhoto ? (
             <View

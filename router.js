@@ -9,17 +9,18 @@ import { CameraScreen } from './Screens/NestedScreens/CameraScreen';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from './redux/auth/authSelectors';
 import { useEffect } from 'react';
-import { authUpdateStatus } from './redux/auth/authOperations';
+import { authChangeState } from './redux/auth/authOperations';
 
 const AuthStack = createStackNavigator();
 
-export const Routing = () => {
+export const Router = () => {
   const { isCurrentUser } = useSelector(selectUser);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(authUpdateStatus());
+    dispatch(authChangeState());
   }, []);
+
   return (
     <NavigationContainer>
       <AuthStack.Navigator screenOptions={{ headerShown: false }}>

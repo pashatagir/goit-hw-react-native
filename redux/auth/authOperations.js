@@ -3,8 +3,6 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   signOut,
-  getAuth,
-  onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -74,7 +72,7 @@ export const authLogin =
     }
   };
 
-export const authUpdateStatus = () => async dispatch => {
+export const authChangeState = () => async dispatch => {
   try {
     const authEmail = await AsyncStorage.getItem('auth_email');
     const authPassword = await AsyncStorage.getItem('auth_password');
@@ -85,7 +83,6 @@ export const authUpdateStatus = () => async dispatch => {
       try {
         await dispatch(authLogin(userData));
       } catch (error) {
-        console.log('Sorry, this user was deleted');
         return error.message;
       }
     }
@@ -100,6 +97,15 @@ export const authLogout = () => async dispatch => {
     dispatch(logoutUser());
     await AsyncStorage.removeItem('auth_email');
     await AsyncStorage.removeItem('auth_password');
+  } catch (error) {
+    return error.message;
+  }
+};
+
+export const updateAvatar = avatar => async dispatch => {
+  try {
+    dispatch(updateUserAvatar({ avatar }));
+    await updateProfile(auth.currentUser, { photoURL: avatar });
   } catch (error) {
     return error.message;
   }
