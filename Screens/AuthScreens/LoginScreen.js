@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Text, TextInput, View, ImageBackground } from 'react-native';
 import { MainButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
 import { authStyles } from './authStyles';
+import { useDispatch } from 'react-redux';
+import { authLogin } from '../../redux/auth/authOperations';
 
 const initialStateUser = {
-  email: '',
+  userEmail: '',
   password: '',
 };
 
 const initialStateFocus = {
-  email: false,
+  userEmail: false,
   password: false,
 };
 
@@ -19,6 +21,7 @@ export const LoginScreen = ({ navigation }) => {
   const [user, setUser] = useState(initialStateUser);
   const [isFocus, setIsFocus] = useState(initialStateFocus);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const dispatch = useDispatch();
 
   const handlerFocus = input => {
     setIsShowKeyboard(true);
@@ -38,11 +41,8 @@ export const LoginScreen = ({ navigation }) => {
 
   const handlerSubmit = () => {
     setIsShowKeyboard(false);
-    setUser(initialStateUser);
-    navigation.navigate('Home', {
-      screen: 'Posts',
-      user,
-    });
+    setUser(user);
+    dispatch(authLogin(user));
   };
 
   return (
@@ -59,19 +59,19 @@ export const LoginScreen = ({ navigation }) => {
         >
           <Text style={{ ...authStyles.title, marginTop: 32 }}>Sign in</Text>
           <TextInput
-            value={user.email}
+            value={user.userEmail}
             onChangeText={value =>
-              setUser(prevState => ({ ...prevState, email: value }))
+              setUser(prevState => ({ ...prevState, userEmail: value }))
             }
-            onFocus={() => handlerFocus('email')}
-            onEndEditing={() => handlerEndEditing('email')}
+            onFocus={() => handlerFocus('userEmail')}
+            onEndEditing={() => handlerEndEditing('userEmail')}
             placeholder="E-mail"
             placeholderTextColor="#BDBDBD"
             style={{
               ...authStyles.input,
               marginBottom: 10,
-              borderColor: isFocus.email ? '#FF6C00' : '#E8E8E8',
-              backgroundColor: isFocus.email ? '#FFFFFF' : '#F6F6F6',
+              borderColor: isFocus.userEmail ? '#FF6C00' : '#E8E8E8',
+              backgroundColor: isFocus.userEmail ? '#FFFFFF' : '#F6F6F6',
             }}
           />
           <View style={{ ...authStyles.wrapperInput, marginBottom: 43 }}>

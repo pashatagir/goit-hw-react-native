@@ -1,19 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Text, TextInput, View, Image, ImageBackground } from 'react-native';
+import {
+  Text,
+  TextInput,
+  View,
+  Image,
+  ImageBackground,
+  Keyboard,
+} from 'react-native';
 import { AddAvatarIcon, RemoveAvatarIcon } from '../../Components/Icons';
 import { AddAvatarButton, MainButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
 import { authStyles } from './authStyles';
+import { useDispatch } from 'react-redux';
+import { authRegister } from '../../redux/auth/authOperations';
 
 const initialStateUser = {
-  login: '',
-  email: '',
+  userName: '',
+  userEmail: '',
   password: '',
   avatar: '',
 };
 const initialStateFocus = {
-  login: false,
-  email: false,
+  userName: false,
+  userEmail: false,
   password: false,
 };
 
@@ -23,6 +32,8 @@ export const RegistrationScreen = ({ navigation }) => {
   const [userPhoto, setUserPhoto] = useState(null);
   const [isFocus, setIsFocus] = useState(initialStateFocus);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const dispatch = useDispatch();
 
   const handlerAddAvatar = () => {
     setUserPhoto('../../assets/image/avatar.png');
@@ -50,11 +61,9 @@ export const RegistrationScreen = ({ navigation }) => {
 
   const handlerSubmit = () => {
     setIsShowKeyboard(false);
+    Keyboard.dismiss();
     setUser(user);
-    navigation.navigate('Home', {
-      screen: 'Posts',
-      params: { user },
-    });
+    dispatch(authRegister(user));
   };
 
   return (
@@ -91,35 +100,35 @@ export const RegistrationScreen = ({ navigation }) => {
           )}
           <Text style={authStyles.title}>Registration</Text>
           <TextInput
-            value={user.login}
+            value={user.userName}
             onChangeText={value =>
-              setUser(prevState => ({ ...prevState, login: value }))
+              setUser(prevState => ({ ...prevState, userName: value }))
             }
-            onFocus={() => handlerFocus('login')}
-            onEndEditing={() => handlerEndEditing('login')}
+            onFocus={() => handlerFocus('userName')}
+            onEndEditing={() => handlerEndEditing('userName')}
             placeholder="Login"
             placeholderTextColor="#BDBDBD"
             style={{
               ...authStyles.input,
               marginBottom: 10,
-              borderColor: isFocus.login ? '#FF6C00' : '#E8E8E8',
-              backgroundColor: isFocus.login ? '#FFFFFF' : '#F6F6F6',
+              borderColor: isFocus.userName ? '#FF6C00' : '#E8E8E8',
+              backgroundColor: isFocus.userName ? '#FFFFFF' : '#F6F6F6',
             }}
           />
           <TextInput
-            value={user.email}
+            value={user.userEmail}
             onChangeText={value =>
-              setUser(prevState => ({ ...prevState, email: value }))
+              setUser(prevState => ({ ...prevState, userEmail: value }))
             }
-            onFocus={() => handlerFocus('email')}
-            onEndEditing={() => handlerEndEditing('email')}
+            onFocus={() => handlerFocus('userEmail')}
+            onEndEditing={() => handlerEndEditing('userEmail')}
             placeholder="E-mail"
             placeholderTextColor="#BDBDBD"
             style={{
               ...authStyles.input,
               marginBottom: 10,
-              borderColor: isFocus.email ? '#FF6C00' : '#E8E8E8',
-              backgroundColor: isFocus.email ? '#FFFFFF' : '#F6F6F6',
+              borderColor: isFocus.userEmail ? '#FF6C00' : '#E8E8E8',
+              backgroundColor: isFocus.userEmail ? '#FFFFFF' : '#F6F6F6',
             }}
           />
           <View style={{ ...authStyles.wrapperInput, marginBottom: 43 }}>

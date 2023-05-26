@@ -61,12 +61,16 @@ export const CommentsScreen = ({ navigation }) => {
   };
 
   const handlerSubmit = () => {
+    if (!text || text.length < 10 || text.length > 200) {
+      return;
+    }
     const newComment = {
       id: Date.now().toString(),
       avatar: '../../assets/image/ellipse.png',
       text: text.trim(),
       date: format(Date.now(), 'dd MMMM yyy | kk:mm'),
     };
+
     setComments(prevState => [...prevState, newComment]);
     setText('');
     Keyboard.dismiss();
@@ -154,7 +158,9 @@ export const CommentsScreen = ({ navigation }) => {
         >
           <TextInput
             value={text}
-            onChangeText={setText}
+            onChangeText={value =>
+              setText(prevState => ({ ...prevState, text: value }))
+            }
             onFocus={() => handlerFocus('text')}
             onEndEditing={() => handlerEndEditing('text')}
             placeholder="Add comment..."

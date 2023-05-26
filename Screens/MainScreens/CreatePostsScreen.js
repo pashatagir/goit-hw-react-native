@@ -244,7 +244,7 @@ export const CreatePostsScreen = ({ navigation, route }) => {
   );
 };
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   camera: {
     borderRadius: 8,
   },

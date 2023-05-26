@@ -10,10 +10,14 @@ import {
   UserIcon,
 } from '../../Components/Icons';
 import { MapScreen } from '../NestedScreens/MapScreen';
+import { useDispatch } from 'react-redux';
+import { authLogout } from '../../redux/auth/authOperations';
 
 const Tab = createBottomTabNavigator();
 
 export const Home = ({ navigation }) => {
+  const dispatch = useDispatch();
+
   return (
     <Tab.Navigator
       initialRouteName="Posts"
@@ -37,7 +41,11 @@ export const Home = ({ navigation }) => {
           tabBarIcon: ({ focused }) => <GridIcon focused={focused} />,
           headerTitleAlign: 'center',
           headerRight: () => (
-            <LogOutIcon onPress={() => navigation.navigate('Login')} />
+            <LogOutIcon
+              onPress={() => {
+                dispatch(authLogout());
+              }}
+            />
           ),
           headerRightContainerStyle: { paddingRight: 16 },
         }}
