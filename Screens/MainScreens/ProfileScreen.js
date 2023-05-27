@@ -22,6 +22,8 @@ import { Container } from '../../Components/Container';
 import { fonts } from '../../assets/fonts/fonts';
 import { useDispatch } from 'react-redux';
 import { authLogout } from '../../redux/auth/authOperations';
+import 'react-native-get-random-values';
+import { nanoid } from 'nanoid';
 
 const initStatePosts = [
   {
@@ -57,6 +59,7 @@ const initStatePosts = [
 
 export const ProfileScreen = ({ route, navigation }) => {
   const [posts, setPosts] = useState(initStatePosts);
+
   const dispatch = useDispatch();
   const [userPhoto, setUserPhoto] = useState('../../assets/image/avatar.png');
 
@@ -171,7 +174,7 @@ export const ProfileScreen = ({ route, navigation }) => {
                   </View>
                 </View>
               )}
-              keyExtractor={item => item.id}
+              keyExtractor={() => nanoid()}
             />
           </SafeAreaView>
         </View>

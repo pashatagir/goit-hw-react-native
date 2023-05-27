@@ -10,34 +10,39 @@ import {
 import { Container } from '../../Components/Container';
 import { fonts } from '../../assets/fonts/fonts';
 import { CommentOnIcon, LikeOnIcon, MapPinIcon } from '../../Components/Icons';
+import 'react-native-get-random-values';
+import { nanoid } from 'nanoid';
 
 const initStatePosts = [
   {
-    id: Math.floor(Math.random() * 1677745654215).toString(16),
+    id: '1',
     image:
       'http://www.golos.com.ua/images_article/orig/2020/08/270820/zakarpatlis.jpg',
     nameLocation: 'Forest',
     descriptionLocation: 'Ukraine',
-    location: { latitude: 48.383022, longitude: 31.1828699 },
+    latitude: 48.383022,
+    longitude: 31.1828699,
     commentsCount: 8,
     likesCount: 153,
   },
   {
-    id: Math.floor(Math.random() * 1677847215).toString(16),
+    id: '2',
     image: 'http://mixo.com.ua/wp-content/uploads/2019/02/chernoe_more.jpg',
     nameLocation: 'Sunset on Black Sea',
     descriptionLocation: 'Ukraine',
-    location: { latitude: 44.95719, longitude: 34.11079 },
+    latitude: 44.95719,
+    longitude: 34.11079,
     commentsCount: 10,
     likesCount: 200,
   },
   {
-    id: Math.floor(Math.random() * 1677729615).toString(16),
+    id: '3',
     image:
       'https://www.oldhousedreams.com/wp-content/uploads/2021/04/13-spoletoitaly.jpg',
     nameLocation: 'Old house in Venice',
     descriptionLocation: 'Italy',
-    location: { latitude: 41.29246, longitude: 12.5736108 },
+    latitude: 41.29246,
+    longitude: 12.5736108,
     commentsCount: 50,
     likesCount: 200,
   },
@@ -106,7 +111,7 @@ export const PostsScreen = ({ navigation, route }) => {
                       alignItems: 'center',
                     }}
                     onPress={() => {
-                      navigation.navigate('Comments');
+                      navigation.navigate('Comments', { params: route.name });
                     }}
                   >
                     <CommentOnIcon />
@@ -123,7 +128,8 @@ export const PostsScreen = ({ navigation, route }) => {
                   style={{ flexDirection: 'row', alignItems: 'center' }}
                   onPress={() =>
                     navigation.navigate('Map', {
-                      data: item.location,
+                      latitude: item.latitude,
+                      longitude: item.longitude,
                     })
                   }
                 >
@@ -140,7 +146,7 @@ export const PostsScreen = ({ navigation, route }) => {
               </View>
             </View>
           )}
-          keyExtractor={item => item.id}
+          keyExtractor={() => nanoid()}
         />
       </SafeAreaView>
     </Container>

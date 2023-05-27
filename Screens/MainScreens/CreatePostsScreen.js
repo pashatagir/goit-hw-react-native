@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   TextInput,
@@ -9,24 +9,19 @@ import {
   Image,
 } from 'react-native';
 import { Container } from '../../Components/Container';
-import {
-  CameraIcon,
-  MapPinIcon,
-  TrashIcon,
-  FlipCameraIcon,
-} from '../../Components/Icons';
+import { CameraIcon, MapPinIcon, TrashIcon } from '../../Components/Icons';
 import { MainButton, TrashButton } from '../../Components/Buttons';
 import { fonts } from '../../assets/fonts/fonts';
-import { Camera } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
-import * as Location from 'expo-location';
+import 'react-native-get-random-values';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectImageData } from '../../redux/posts/postSelectors';
 
 const initialStatePost = {
-  id: '',
   nameLocation: '',
   image: '',
   descriptionLocation: '',
-  location: '',
+  latitude: null,
+  longitude: null,
   commentsCount: 0,
   likesCount: 0,
 };
@@ -40,41 +35,14 @@ export const CreatePostsScreen = ({ navigation, route }) => {
   const [isFocus, setIsFocus] = useState(initialStateFocus);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [post, setPost] = useState(initialStatePost);
-  const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const dispatch = useDispatch();
+  const { image, latitude, longitude } = useSelector(selectImageData);
+
+  const { nameLocation, descriptionLocation } = post;
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      await MediaLibrary.requestPermissionsAsync();
-      const statusLocation = await Location.requestForegroundPermissionsAsync();
-
-      if (status === 'granted' && statusLocation.status === 'granted') {
-        setHasPermission(true);
-      }
-    })();
-  }, []);
-
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return (
-      <Text>Grant permission to camera and location for further use!</Text>
-    );
-  }
-
-  const takePhoto = async () => {
-    const { uri } = await cameraRef.takePictureAsync();
-    await MediaLibrary.createAssetAsync(uri);
-    const { coords } = await Location.getCurrentPositionAsync();
-    setPost(prevState => ({
-      ...prevState,
-      image: uri,
-      location: coords,
-    }));
-  };
+    setPost({ ...post, image, latitude, longitude });
+  }, [image, latitude, longitude]);
 
   const handlerFocus = input => {
     setIsShowKeyboard(true);
@@ -96,9 +64,9 @@ export const CreatePostsScreen = ({ navigation, route }) => {
 
   const handlerSubmit = () => {
     setIsShowKeyboard(false);
+    uploadPostToServer();
     navigation.navigate('Home', {
       screen: 'Posts',
-      params: post,
     });
     setPost(initialStatePost);
   };
@@ -107,8 +75,6 @@ export const CreatePostsScreen = ({ navigation, route }) => {
     setIsShowKeyboard(false);
     setPost(initialStatePost);
   };
-
-  const { nameLocation, descriptionLocation, image } = post;
 
   return (
     <Container>
@@ -129,7 +95,7 @@ export const CreatePostsScreen = ({ navigation, route }) => {
               }}
             />
             <TouchableOpacity
-              onPress={takePhoto}
+              onPress={() => console.log(post)}
               style={{
                 ...styles.iconBox,
                 backgroundColor: '#ffffff30',
@@ -145,28 +111,18 @@ export const CreatePostsScreen = ({ navigation, route }) => {
               flex: 1,
             }}
           >
-            <Camera type={type} ref={setCameraRef} style={styles.imageBox}>
+            <View style={styles.imageBox}>
               <View style={styles.iconsContainer}>
                 <TouchableOpacity
-                  onPress={takePhoto}
+                  onPress={() =>
+                    navigation.navigate('Camera', { params: route.name })
+                  }
                   style={{ ...styles.iconBox, borderColor: '#E8E8E8' }}
                 >
                   <CameraIcon style={{ alignSelf: 'center' }} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={styles.flipIconBox}
-                onPress={() => {
-                  setType(
-                    type === Camera.Constants.Type.back
-                      ? Camera.Constants.Type.front
-                      : Camera.Constants.Type.back
-                  );
-                }}
-              >
-                <FlipCameraIcon style={styles.cameraIcon} />
-              </TouchableOpacity>
-            </Camera>
+            </View>
           </View>
         )}
         <Text

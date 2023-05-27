@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   SafeAreaView,
@@ -7,28 +7,35 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { Container } from '../../Components/Container';
-import {
-  CameraIcon,
-  MapPinIcon,
-  TrashIcon,
-  FlipCameraIcon,
-} from '../../Components/Icons';
+import { CameraIcon, FlipCameraIcon } from '../../Components/Icons';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
+import { storage } from '../../firebase/config';
+import { db } from '../../firebase/config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import * as ImageManipulator from 'expo-image-manipulator';
+import 'react-native-get-random-values';
+import { nanoid } from 'nanoid';
+import { postSlice } from '../../redux/posts/postSlice';
+import { updateAvatar } from '../../redux/auth/authOperations';
+import { useDispatch } from 'react-redux';
 
 export const CameraScreen = ({ navigation, route }) => {
   const [photo, setPhoto] = useState(null);
+  const [location, setLocation] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const dispatch = useDispatch();
+  const screen = route.params.params;
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       await MediaLibrary.requestPermissionsAsync();
-
-      if (status === 'granted') {
+      const locationStatus = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted' && locationStatus.status === 'granted') {
         setHasPermission(true);
       }
     })();
@@ -44,12 +51,70 @@ export const CameraScreen = ({ navigation, route }) => {
   const takePhoto = async () => {
     const { uri } = await cameraRef.takePictureAsync();
     await MediaLibrary.createAssetAsync(uri);
+    const location = await Location.getCurrentPositionAsync();
+    setLocation(location.coords);
     setPhoto(uri);
+  };
+
+  const uploadPhotoToServer = async () => {
+    const { uri } = await ImageManipulator.manipulateAsync(
+      photo,
+      [{ resize: { width: 800 } }],
+      {
+        compress: 0.7,
+        format: ImageManipulator.SaveFormat.JPEG,
+      }
+    );
+    const res = await fetch(photo);
+    const file = await res.blob();
+
+    const uniqId = nanoid();
+    const imageRef =
+      screen === 'Create'
+        ? ref(storage, `photo_post/post_${uniqId}`)
+        : ref(storage, `users_avatar/avatar_${uniqId}`);
+    try {
+      await uploadBytes(imageRef, file);
+      const processedPhoto = await getDownloadURL(imageRef);
+      return processedPhoto;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const savePhoto = async () => {
+    const downloadedPhoto = await uploadPhotoToServer();
+    if (screen === 'Create') {
+      dispatch(
+        postSlice.actions.updateImage({
+          image: downloadedPhoto,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        })
+      );
+    } else dispatch(updateAvatar(downloadedPhoto));
+
+    switch (screen) {
+      case 'Registration':
+        navigation.navigate('Registration', { photoUri: downloadedPhoto });
+        break;
+      case 'Profile':
+        navigation.navigate('Profile', { photoUri: downloadedPhoto });
+        break;
+      case 'Create':
+        navigation.navigate('Home', {
+          screen: 'Create',
+        });
+        break;
+      default:
+        break;
+    }
   };
 
   const handlerSubmit = () => {
     navigation.navigate('Registration', { photo });
   };
+
   return (
     <SafeAreaView
       styles={{
@@ -60,7 +125,7 @@ export const CameraScreen = ({ navigation, route }) => {
         <View style={styles.iconsContainer}>
           <TouchableOpacity
             style={{ ...styles.flipIconBox, borderRadius: 8 }}
-            onPress={handlerSubmit}
+            onPress={savePhoto}
           >
             <Image
               source={{ uri: photo }}

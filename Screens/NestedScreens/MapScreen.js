@@ -11,7 +11,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { fonts } from '../../assets/fonts/fonts';
 
 export const MapScreen = ({ navigation, route }) => {
-  const { longitude, latitude } = route.params?.data;
+  const { longitude, latitude } = route.params;
   return (
     <Container>
       <View style={styles.header}>

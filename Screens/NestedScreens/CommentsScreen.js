@@ -15,6 +15,8 @@ import { Container } from '../../Components/Container';
 import { AddComentButton } from '../../Components/Buttons';
 import { AddCommentIcon, ArrowLeftIcon } from '../../Components/Icons';
 import { format } from 'date-fns';
+import 'react-native-get-random-values';
+import { nanoid } from 'nanoid';
 
 const initStateComments = [
   {
@@ -37,12 +39,13 @@ const initStateComments = [
   },
 ];
 
-export const CommentsScreen = ({ navigation }) => {
+export const CommentsScreen = ({ route, navigation }) => {
   const [isFocus, setIsFocus] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [text, setText] = useState(null);
   const [comments, setComments] = useState(initStateComments);
   const { wrapper, dateStyle, textStyle, avatar, input, wrapperInput } = styles;
+  console.log(route.params);
 
   const handlerFocus = input => {
     setIsShowKeyboard(true);
@@ -65,7 +68,7 @@ export const CommentsScreen = ({ navigation }) => {
       return;
     }
     const newComment = {
-      id: Date.now().toString(),
+      id: nanoid(),
       avatar: '../../assets/image/ellipse.png',
       text: text.trim(),
       date: format(Date.now(), 'dd MMMM yyy | kk:mm'),
