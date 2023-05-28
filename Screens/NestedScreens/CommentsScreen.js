@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -17,35 +17,30 @@ import { AddCommentIcon, ArrowLeftIcon } from '../../Components/Icons';
 import { format } from 'date-fns';
 import 'react-native-get-random-values';
 import { nanoid } from 'nanoid';
-
-const initStateComments = [
-  {
-    id: '1',
-    avatar: '../../assets/image/ellipse.png',
-    text: 'Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!',
-    date: '09 june 2020 | 08:40',
-  },
-  {
-    id: '2',
-    avatar: '../../assets/image/ellipseN.png',
-    text: 'A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.',
-    date: '09 june 2020 | 09:14',
-  },
-  {
-    id: '3',
-    avatar: '../../assets/image/ellipse.png',
-    text: 'Thank you! That was very helpful!',
-    date: '09 june 2020 | 09:40',
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { selectComments } from '../../redux/posts/postSelectors';
+import {
+  getCommentsByPostId,
+  uploadComments,
+} from '../../redux/posts/postOperations';
+import { selectUser } from '../../redux/auth/authSelectors';
 
 export const CommentsScreen = ({ route, navigation }) => {
   const [isFocus, setIsFocus] = useState(false);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [text, setText] = useState(null);
-  const [comments, setComments] = useState(initStateComments);
-  const { wrapper, dateStyle, textStyle, avatar, input, wrapperInput } = styles;
-  console.log(route.params);
+  const dispatch = useDispatch();
+  const comments = useSelector(selectComments);
+  const { userName, avatar, userId } = useSelector(selectUser);
+
+  const { postId, image } = route.params;
+  const screen = route.params.params;
+
+  // item.userId===userId
+
+  useEffect(() => {
+    dispatch(getCommentsByPostId(postId));
+  }, [dispatch]);
 
   const handlerFocus = input => {
     setIsShowKeyboard(true);
@@ -64,26 +59,34 @@ export const CommentsScreen = ({ route, navigation }) => {
   };
 
   const handlerSubmit = () => {
-    if (!text || text.length < 10 || text.length > 200) {
+    if (!text || text.length < 10 || text.length > 100) {
       return;
     }
     const newComment = {
-      id: nanoid(),
-      avatar: '../../assets/image/ellipse.png',
+      commentId: nanoid(),
       text: text.trim(),
       date: format(Date.now(), 'dd MMMM yyy | kk:mm'),
+      postId,
     };
 
-    setComments(prevState => [...prevState, newComment]);
+    dispatch(uploadComments(newComment));
+    dispatch(getCommentsByPostId(postId));
+
     setText('');
     Keyboard.dismiss();
   };
 
+  const { wrapper, dateStyle, textStyle, avatarComment, input, wrapperInput } =
+    styles;
   return (
     <Container>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Posts')}
+          onPress={() => {
+            if (screen === 'Posts') {
+              navigation.navigate('Posts');
+            } else navigation.navigate('Profile');
+          }}
           style={styles.button}
         >
           <ArrowLeftIcon />
@@ -97,7 +100,7 @@ export const CommentsScreen = ({ route, navigation }) => {
         }}
       >
         <Image
-          source={require('../../assets/image/sunset.jpg')}
+          source={{ uri: image }}
           style={{ width: '100%', height: 240, borderRadius: 8 }}
         />
 
@@ -116,18 +119,18 @@ export const CommentsScreen = ({ route, navigation }) => {
                   {index % 2 === 0 ? (
                     <Image
                       style={{
-                        ...avatar,
+                        ...avatarComment,
                         alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
                       }}
-                      source={require('../../assets/image/ellipse.png')}
+                      source={{ uri: avatar }}
                     />
                   ) : (
                     <Image
                       style={{
-                        ...avatar,
+                        ...avatarComment,
                         alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
                       }}
-                      source={require('../../assets/image/ellipseN.png')}
+                      source={{ uri: avatar }}
                     />
                   )}
                   <View
@@ -137,6 +140,9 @@ export const CommentsScreen = ({ route, navigation }) => {
                       borderTopLeftRadius: index % 2 === 0 ? 0 : 8,
                     }}
                   >
+                    <Text style={{ fontFamily: fonts.roboto500 }}>
+                      {userName}:
+                    </Text>
                     <Text style={textStyle}>{item.text}</Text>
                     <Text
                       style={{
@@ -149,7 +155,7 @@ export const CommentsScreen = ({ route, navigation }) => {
                   </View>
                 </View>
               )}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.commentId}
             />
           </SafeAreaView>
         )}
@@ -161,9 +167,7 @@ export const CommentsScreen = ({ route, navigation }) => {
         >
           <TextInput
             value={text}
-            onChangeText={value =>
-              setText(prevState => ({ ...prevState, text: value }))
-            }
+            onChangeText={setText}
             onFocus={() => handlerFocus('text')}
             onEndEditing={() => handlerEndEditing('text')}
             placeholder="Add comment..."
@@ -184,7 +188,7 @@ export const CommentsScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  avatar: {
+  avatarComment: {
     width: 28,
     height: 28,
     borderRadius: 28,

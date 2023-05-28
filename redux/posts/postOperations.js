@@ -11,7 +11,7 @@ import {
 import { db } from '../../firebase/config';
 
 import { postSlice } from './postSlice';
-const { updatePosts, updateLikes, updateComments, updateCountComments } =
+const { updatePosts, updateLikes, updateComments, updateCommentsCount } =
   postSlice.actions;
 
 export const uploadPostToServer = post => async (_, getState) => {
@@ -35,7 +35,7 @@ export const getPosts = () => async (dispatch, getState) => {
 
     const allPosts = [];
     querySnapshot.forEach(doc =>
-      allPosts.push({ ...doc.data(), idPost: doc.id })
+      allPosts.push({ ...doc.data(), postId: doc.id })
     );
 
     dispatch(updatePosts(allPosts));
@@ -45,16 +45,16 @@ export const getPosts = () => async (dispatch, getState) => {
   }
 };
 
-export const changeLikes = idPost => async dispatch => {
+export const changeLikes = postId => async dispatch => {
   try {
-    const postRef = doc(db, 'posts', idPost);
-    const countLikes = (await getDoc(postRef)).data().likes;
+    const postRef = doc(db, 'posts', postId);
+    const likes = (await getDoc(postRef)).data().likes;
 
     await updateDoc(postRef, {
-      likes: countLikes + 1,
+      likes: likes + 1,
     });
 
-    dispatch(updateLikes({ id: idPost, likes: countLikes + 1 }));
+    dispatch(updateLikes({ id: postId, likes: likes + 1 }));
   } catch (error) {
     console.log(error.message);
   }
@@ -73,23 +73,25 @@ export const uploadComments = comment => async (_, getState) => {
   }
 };
 
-export const getCommentsByPostId = idPost => async dispatch => {
+export const getCommentsByPostId = postId => async dispatch => {
   try {
-    const q = query(collection(db, 'comments'), where('idPost', '==', idPost));
+    const q = query(collection(db, 'comments'), where('postId', '==', postId));
     const querySnapshot = await getDocs(q);
     const allComments = [];
-    querySnapshot.forEach(doc => allComments.push(doc.data()));
+    querySnapshot.forEach(doc =>
+      allComments.push({ ...doc.data(), postId: doc.id })
+    );
 
-    const postRef = doc(db, 'posts', idPost);
+    const postRef = doc(db, 'posts', postId);
     await updateDoc(postRef, {
-      countComments: allComments.length,
+      commentsCount: allComments.length,
     });
 
     dispatch(updateComments(allComments));
     dispatch(
-      updateCountComments({
-        id: idPost,
-        countComments: allComments.length,
+      updateCommentsCount({
+        id: postId,
+        commentsCount: allComments.length,
       })
     );
   } catch (error) {

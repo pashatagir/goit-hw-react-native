@@ -20,7 +20,7 @@ export const postSlice = createSlice({
     updateLikes: (state, { payload }) => {
       const { id, likes } = payload;
       const updatedPosts = state.posts.map(post => {
-        if (post.idPost === id) {
+        if (post.postId === id) {
           return { ...post, likes };
         }
         return post;
@@ -31,11 +31,11 @@ export const postSlice = createSlice({
       ...state,
       comments: payload,
     }),
-    updateCountComments: (state, { payload }) => {
-      const { id, countComments } = payload;
+    updateCommentsCount: (state, { payload }) => {
+      const { id, commentsCount } = payload;
       const updatedPosts = state.posts.map(post => {
-        if (post.idPost === id) {
-          return { ...post, countComments };
+        if (post.postId === id) {
+          return { ...post, commentsCount };
         }
         return post;
       });

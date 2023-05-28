@@ -20,51 +20,43 @@ import {
 import { AddAvatarButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
 import { fonts } from '../../assets/fonts/fonts';
-import { useDispatch } from 'react-redux';
-import { authLogout } from '../../redux/auth/authOperations';
+import { useDispatch, useSelector } from 'react-redux';
+import { authLogout, changeAvatar } from '../../redux/auth/authOperations';
 import 'react-native-get-random-values';
 import { nanoid } from 'nanoid';
-
-const initStatePosts = [
-  {
-    id: '1',
-    image:
-      'http://www.golos.com.ua/images_article/orig/2020/08/270820/zakarpatlis.jpg',
-    nameLocation: 'Forest',
-    descriptionLocation: 'Ukraine',
-    location: { latitude: 48.383022, longitude: 31.1828699 },
-    commentsCount: 8,
-    likesCount: 153,
-  },
-  {
-    id: '2',
-    image: 'http://mixo.com.ua/wp-content/uploads/2019/02/chernoe_more.jpg',
-    nameLocation: 'Sunset on Black Sea',
-    descriptionLocation: 'Ukraine',
-    location: { latitude: 44.95719, longitude: 34.11079 },
-    commentsCount: 10,
-    likesCount: 200,
-  },
-  {
-    id: '3',
-    image:
-      'https://www.oldhousedreams.com/wp-content/uploads/2021/04/13-spoletoitaly.jpg',
-    nameLocation: 'Old house in Venice',
-    descriptionLocation: 'Italy',
-    location: { latitude: 41.29246, longitude: 12.5736108 },
-    commentsCount: 50,
-    likesCount: 200,
-  },
-];
+import { selectAvatar, selectUser } from '../../redux/auth/authSelectors';
+import { selectPosts } from '../../redux/posts/postSelectors';
+import { changeLikes, getPosts } from '../../redux/posts/postOperations';
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../../firebase/config';
 
 export const ProfileScreen = ({ route, navigation }) => {
-  const [posts, setPosts] = useState(initStatePosts);
-
+  const { userName } = useSelector(selectUser);
+  const posts = useSelector(selectPosts);
   const dispatch = useDispatch();
-  const [userPhoto, setUserPhoto] = useState('../../assets/image/avatar.png');
+  const [avatarUri, setAvatarUri] = useState(null);
+  const avatarURL = useSelector(selectAvatar);
 
-  const handlerAddAvatar = () => {
-    setUserPhoto('../../assets/image/avatar.png');
+  useEffect(() => {
+    dispatch(getPosts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (avatarURL) {
+      setAvatarUri(avatarURL);
+    }
+  }, [avatarURL]);
+
+  const removeAvatar = async () => {
+    const avatarRef = ref(storage, avatarURL);
+    await deleteObject(avatarRef)
+      .then(() => {
+        dispatch(changeAvatar(''));
+        setAvatarUri(null);
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
   };
 
   return (
@@ -81,15 +73,18 @@ export const ProfileScreen = ({ route, navigation }) => {
               }}
             />
           </View>
-          {userPhoto ? (
+          {avatarUri ? (
             <View
               style={{
                 ...profileStyles.boxAvatar,
                 transform: [{ translateX: 50 }],
               }}
             >
-              <Image source={require('../../assets/image/avatar.png')} />
-              <AddAvatarButton onPress={() => setUserPhoto('')}>
+              <Image
+                source={{ uri: avatarURL || null }}
+                style={{ width: 120, height: 120, borderRadius: 16 }}
+              />
+              <AddAvatarButton onPress={removeAvatar}>
                 <RemoveAvatarIcon />
               </AddAvatarButton>
             </View>
@@ -101,16 +96,20 @@ export const ProfileScreen = ({ route, navigation }) => {
                 transform: [{ translateX: 50 }],
               }}
             >
-              <AddAvatarButton onPress={handlerAddAvatar}>
+              <AddAvatarButton
+                onPress={() =>
+                  navigation.navigate('Camera', { params: route.name })
+                }
+              >
                 <AddAvatarIcon />
               </AddAvatarButton>
             </View>
           )}
-          <Text style={profileStyles.title}>Natali Romanova</Text>
+          <Text style={profileStyles.title}>{userName}</Text>
           <SafeAreaView style={{ flex: 1, paddingBottom: 123 }}>
             <FlatList
               data={posts}
-              renderItem={({ item, index }) => (
+              renderItem={({ item }) => (
                 <View style={{ marginTop: 32 }}>
                   <Image
                     source={{ uri: item.image }}
@@ -138,7 +137,11 @@ export const ProfileScreen = ({ route, navigation }) => {
                           alignItems: 'center',
                         }}
                         onPress={() => {
-                          navigation.navigate('Comments');
+                          navigation.navigate('Comments', {
+                            image: item.image,
+                            postId: item.postId,
+                            params: route.name,
+                          });
                         }}
                       >
                         <CommentOnIcon />
@@ -148,16 +151,19 @@ export const ProfileScreen = ({ route, navigation }) => {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={{ flexDirection: 'row', alignItems: 'center' }}
+                        onPress={() => dispatch(changeLikes(item.postId))}
                       >
                         <LikeOnIcon />
-                        <Text style={{ marginLeft: 6 }}>{item.likesCount}</Text>
+                        <Text style={{ marginLeft: 6 }}>{item.likes}</Text>
                       </TouchableOpacity>
                     </View>
                     <TouchableOpacity
                       style={{ flexDirection: 'row', alignItems: 'center' }}
                       onPress={() =>
                         navigation.navigate('Map', {
-                          data: item.location,
+                          latitude: item.latitude,
+                          longitude: item.longitude,
+                          params: route.name,
                         })
                       }
                     >

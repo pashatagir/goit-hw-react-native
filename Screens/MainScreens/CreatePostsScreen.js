@@ -15,6 +15,7 @@ import { fonts } from '../../assets/fonts/fonts';
 import 'react-native-get-random-values';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectImageData } from '../../redux/posts/postSelectors';
+import { getPosts, uploadPostToServer } from '../../redux/posts/postOperations';
 
 const initialStatePost = {
   nameLocation: '',
@@ -23,7 +24,7 @@ const initialStatePost = {
   latitude: null,
   longitude: null,
   commentsCount: 0,
-  likesCount: 0,
+  likes: 0,
 };
 
 const initialStateFocus = {
@@ -36,8 +37,8 @@ export const CreatePostsScreen = ({ navigation, route }) => {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [post, setPost] = useState(initialStatePost);
   const dispatch = useDispatch();
-  const { image, latitude, longitude } = useSelector(selectImageData);
 
+  const { image, latitude, longitude } = useSelector(selectImageData);
   const { nameLocation, descriptionLocation } = post;
 
   useEffect(() => {
@@ -64,7 +65,8 @@ export const CreatePostsScreen = ({ navigation, route }) => {
 
   const handlerSubmit = () => {
     setIsShowKeyboard(false);
-    uploadPostToServer();
+    dispatch(uploadPostToServer(post));
+    dispatch(getPosts());
     navigation.navigate('Home', {
       screen: 'Posts',
     });

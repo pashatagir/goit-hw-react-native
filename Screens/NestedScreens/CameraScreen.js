@@ -18,7 +18,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import 'react-native-get-random-values';
 import { nanoid } from 'nanoid';
 import { postSlice } from '../../redux/posts/postSlice';
-import { updateAvatar } from '../../redux/auth/authOperations';
+import { changeAvatar } from '../../redux/auth/authOperations';
 import { useDispatch } from 'react-redux';
 
 export const CameraScreen = ({ navigation, route }) => {
@@ -92,14 +92,19 @@ export const CameraScreen = ({ navigation, route }) => {
           longitude: location.longitude,
         })
       );
-    } else dispatch(updateAvatar(downloadedPhoto));
+    } else {
+      dispatch(changeAvatar(downloadedPhoto));
+    }
 
     switch (screen) {
       case 'Registration':
-        navigation.navigate('Registration', { photoUri: downloadedPhoto });
+        navigation.navigate('Registration', { photo: downloadedPhoto });
         break;
       case 'Profile':
-        navigation.navigate('Profile', { photoUri: downloadedPhoto });
+        navigation.navigate('Home', {
+          screen: 'Profile',
+          photo: downloadedPhoto,
+        });
         break;
       case 'Create':
         navigation.navigate('Home', {

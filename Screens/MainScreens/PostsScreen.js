@@ -12,50 +12,19 @@ import { fonts } from '../../assets/fonts/fonts';
 import { CommentOnIcon, LikeOnIcon, MapPinIcon } from '../../Components/Icons';
 import 'react-native-get-random-values';
 import { nanoid } from 'nanoid';
-
-const initStatePosts = [
-  {
-    id: '1',
-    image:
-      'http://www.golos.com.ua/images_article/orig/2020/08/270820/zakarpatlis.jpg',
-    nameLocation: 'Forest',
-    descriptionLocation: 'Ukraine',
-    latitude: 48.383022,
-    longitude: 31.1828699,
-    commentsCount: 8,
-    likesCount: 153,
-  },
-  {
-    id: '2',
-    image: 'http://mixo.com.ua/wp-content/uploads/2019/02/chernoe_more.jpg',
-    nameLocation: 'Sunset on Black Sea',
-    descriptionLocation: 'Ukraine',
-    latitude: 44.95719,
-    longitude: 34.11079,
-    commentsCount: 10,
-    likesCount: 200,
-  },
-  {
-    id: '3',
-    image:
-      'https://www.oldhousedreams.com/wp-content/uploads/2021/04/13-spoletoitaly.jpg',
-    nameLocation: 'Old house in Venice',
-    descriptionLocation: 'Italy',
-    latitude: 41.29246,
-    longitude: 12.5736108,
-    commentsCount: 50,
-    likesCount: 200,
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUser } from '../../redux/auth/authSelectors';
+import { selectPosts } from '../../redux/posts/postSelectors';
+import { changeLikes, getPosts } from '../../redux/posts/postOperations';
 
 export const PostsScreen = ({ navigation, route }) => {
-  const [posts, setPosts] = useState(initStatePosts);
+  const { userName, userEmail, avatar } = useSelector(selectUser);
+  const posts = useSelector(selectPosts);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (route.params) {
-      setPosts(prevState => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    dispatch(getPosts());
+  }, [dispatch]);
 
   return (
     <Container>
@@ -68,14 +37,12 @@ export const PostsScreen = ({ navigation, route }) => {
         }}
       >
         <Image
-          source={require('../../assets/image/avatar.png')}
-          style={{ width: 60, height: 60 }}
+          source={{ uri: avatar ? avatar : null }}
+          style={{ width: 60, height: 60, borderRadius: 8 }}
         />
         <View style={{ marginLeft: 8 }}>
-          <Text style={{ fontFamily: fonts.roboto700 }}>
-            {'Natali Romanova'}
-          </Text>
-          <Text>{'email@example.com'}</Text>
+          <Text style={{ fontFamily: fonts.roboto700 }}>{userName}</Text>
+          <Text>{userEmail}</Text>
         </View>
       </View>
       <SafeAreaView
@@ -111,7 +78,11 @@ export const PostsScreen = ({ navigation, route }) => {
                       alignItems: 'center',
                     }}
                     onPress={() => {
-                      navigation.navigate('Comments', { params: route.name });
+                      navigation.navigate('Comments', {
+                        image: item.image,
+                        postId: item.postId,
+                        params: route.name,
+                      });
                     }}
                   >
                     <CommentOnIcon />
@@ -119,9 +90,10 @@ export const PostsScreen = ({ navigation, route }) => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={{ flexDirection: 'row', alignItems: 'center' }}
+                    onPress={() => dispatch(changeLikes(item.postId))}
                   >
                     <LikeOnIcon />
-                    <Text style={{ marginLeft: 6 }}>{item.likesCount}</Text>
+                    <Text style={{ marginLeft: 6 }}>{item.likes}</Text>
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
@@ -130,6 +102,7 @@ export const PostsScreen = ({ navigation, route }) => {
                     navigation.navigate('Map', {
                       latitude: item.latitude,
                       longitude: item.longitude,
+                      params: route.name,
                     })
                   }
                 >

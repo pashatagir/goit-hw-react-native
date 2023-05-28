@@ -102,7 +102,7 @@ export const authLogout = () => async dispatch => {
   }
 };
 
-export const updateAvatar = avatar => async dispatch => {
+export const changeAvatar = avatar => async dispatch => {
   try {
     dispatch(updateUserAvatar({ avatar }));
     await updateProfile(auth.currentUser, { photoURL: avatar });

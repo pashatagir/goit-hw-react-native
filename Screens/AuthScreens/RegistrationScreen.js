@@ -11,8 +11,11 @@ import { AddAvatarIcon, RemoveAvatarIcon } from '../../Components/Icons';
 import { AddAvatarButton, MainButton } from '../../Components/Buttons';
 import { Container } from '../../Components/Container';
 import { authStyles } from './authStyles';
-import { useDispatch } from 'react-redux';
-import { authRegister } from '../../redux/auth/authOperations';
+import { useDispatch, useSelector } from 'react-redux';
+import { authRegister, changeAvatar } from '../../redux/auth/authOperations';
+import { selectAvatar } from '../../redux/auth/authSelectors';
+import { deleteObject, ref } from 'firebase/storage';
+import { storage } from '../../firebase/config';
 
 const initialStateUser = {
   userName: '',
@@ -26,22 +29,24 @@ const initialStateFocus = {
   password: false,
 };
 
-export const RegistrationScreen = ({ navigation }) => {
+export const RegistrationScreen = ({ navigation, route }) => {
   const [show, setShow] = useState(false);
   const [user, setUser] = useState(initialStateUser);
-  const [userPhoto, setUserPhoto] = useState(null);
   const [isFocus, setIsFocus] = useState(initialStateFocus);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-
   const dispatch = useDispatch();
-
-  const handlerAddAvatar = () => {
-    setUserPhoto('../../assets/image/avatar.png');
-  };
+  const [avatarUri, setAvatarUri] = useState(null);
+  const avatarURL = useSelector(selectAvatar);
 
   useEffect(() => {
-    setUser(prevState => ({ ...prevState, avatar: userPhoto }));
-  }, [userPhoto]);
+    setUser({ ...user, avatar: route.params?.photo });
+  }, [route.params]);
+
+  useEffect(() => {
+    if (avatarURL) {
+      setAvatarUri(avatarURL);
+    }
+  }, [avatarURL]);
 
   const handlerFocus = input => {
     setIsShowKeyboard(true);
@@ -66,6 +71,19 @@ export const RegistrationScreen = ({ navigation }) => {
     dispatch(authRegister(user));
   };
 
+  const removeAvatar = async () => {
+    const avatarRef = ref(storage, avatarURL);
+    await deleteObject(avatarRef)
+      .then(() => {
+        dispatch(changeAvatar(''));
+        setAvatarUri(null);
+        setUser({ ...user, avatar: null });
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
+  };
+
   return (
     <Container>
       <ImageBackground
@@ -73,7 +91,7 @@ export const RegistrationScreen = ({ navigation }) => {
         style={authStyles.imgBg}
       >
         <View style={{ ...authStyles.form, paddingBottom: 78 }}>
-          {!userPhoto ? (
+          {!user?.avatar ? (
             <View
               style={{
                 ...authStyles.boxAvatar,
@@ -81,7 +99,11 @@ export const RegistrationScreen = ({ navigation }) => {
                 transform: [{ translateX: 50 }],
               }}
             >
-              <AddAvatarButton onPress={handlerAddAvatar}>
+              <AddAvatarButton
+                onPress={() =>
+                  navigation.navigate('Camera', { params: route.name })
+                }
+              >
                 <AddAvatarIcon />
               </AddAvatarButton>
             </View>
@@ -92,8 +114,11 @@ export const RegistrationScreen = ({ navigation }) => {
                 transform: [{ translateX: 50 }],
               }}
             >
-              <Image source={require('../../assets/image/avatar.png')} />
-              <AddAvatarButton onPress={() => setUserPhoto('')}>
+              <Image
+                source={{ uri: user.avatar }}
+                style={{ width: 120, height: 120, borderRadius: 16 }}
+              />
+              <AddAvatarButton onPress={removeAvatar}>
                 <RemoveAvatarIcon />
               </AddAvatarButton>
             </View>

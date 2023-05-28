@@ -12,11 +12,17 @@ import { fonts } from '../../assets/fonts/fonts';
 
 export const MapScreen = ({ navigation, route }) => {
   const { longitude, latitude } = route.params;
+  const screen = route.params.params;
+
   return (
     <Container>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Posts')}
+          onPress={() => {
+            if (screen === 'Posts') {
+              navigation.navigate('Posts');
+            } else navigation.navigate('Profile');
+          }}
           style={styles.button}
         >
           <ArrowLeftIcon />
