@@ -45,16 +45,22 @@ export const getPosts = () => async (dispatch, getState) => {
   }
 };
 
-export const changeLikes = postId => async dispatch => {
+export const changeLikes = postId => async (dispatch, getState) => {
   try {
     const postRef = doc(db, 'posts', postId);
     const likes = (await getDoc(postRef)).data().likes;
+    if (likes === 1) {
+      await updateDoc(postRef, {
+        likes: likes - 1,
+      });
+      dispatch(updateLikes({ id: postId, likes: likes - 1 }));
+    } else {
+      await updateDoc(postRef, {
+        likes: likes + 1,
+      });
 
-    await updateDoc(postRef, {
-      likes: likes + 1,
-    });
-
-    dispatch(updateLikes({ id: postId, likes: likes + 1 }));
+      dispatch(updateLikes({ id: postId, likes: likes + 1 }));
+    }
   } catch (error) {
     console.log(error.message);
   }

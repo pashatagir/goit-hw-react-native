@@ -40,13 +40,13 @@
     "react-native-screens": "~3.18.0",
     "react-native-svg": "13.4.0",
     "react-native-web": "~0.18.10",
-    "react-redux": "^8.0.5"
+    "react-redux": "^8.0.5",
+    "expo-updates": "~0.15.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
   "overrides": {
     "react-devtools-core": "~4.25.0"
-  },
-  "private": true
+  }
 }

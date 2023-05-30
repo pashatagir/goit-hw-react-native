@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import {
   AddAvatarIcon,
@@ -36,6 +37,7 @@ export const ProfileScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const [avatarUri, setAvatarUri] = useState(null);
   const avatarURL = useSelector(selectAvatar);
+  const deviceHeight = Dimensions.get('window').height;
 
   useEffect(() => {
     dispatch(getPosts());
@@ -60,7 +62,7 @@ export const ProfileScreen = ({ route, navigation }) => {
   };
 
   return (
-    <Container>
+    <SafeAreaView style={{ flex: 1 }}>
       <ImageBackground
         source={require('../../assets/image/photo_bg.png')}
         style={profileStyles.imgBg}
@@ -106,11 +108,11 @@ export const ProfileScreen = ({ route, navigation }) => {
             </View>
           )}
           <Text style={profileStyles.title}>{userName}</Text>
-          <SafeAreaView style={{ flex: 1, paddingBottom: 123 }}>
+          <View style={{ marginBottom: 283 }}>
             <FlatList
               data={posts}
               renderItem={({ item }) => (
-                <View style={{ marginTop: 32 }}>
+                <View style={{ marginBottom: 32 }}>
                   <Image
                     source={{ uri: item.image }}
                     style={{ width: '100%', height: 240, borderRadius: 8 }}
@@ -182,10 +184,10 @@ export const ProfileScreen = ({ route, navigation }) => {
               )}
               keyExtractor={() => nanoid()}
             />
-          </SafeAreaView>
+          </View>
         </View>
       </ImageBackground>
-    </Container>
+    </SafeAreaView>
   );
 };
 

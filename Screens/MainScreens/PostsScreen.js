@@ -27,12 +27,12 @@ export const PostsScreen = ({ navigation, route }) => {
   }, [dispatch]);
 
   return (
-    <Container>
+    <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
       <View
         style={{
           paddingHorizontal: 16,
           flexDirection: 'row',
-          paddingTop: 32,
+          paddingVertical: 32,
           alignItems: 'center',
         }}
       >
@@ -45,13 +45,11 @@ export const PostsScreen = ({ navigation, route }) => {
           <Text>{userEmail}</Text>
         </View>
       </View>
-      <SafeAreaView
-        style={{ flex: 1, paddingHorizontal: 16, paddingBottom: 83 }}
-      >
+      <View style={{ marginBottom: 200 }}>
         <FlatList
           data={posts}
           renderItem={({ item, index }) => (
-            <View style={{ marginTop: 32 }}>
+            <View style={{ marginBottom: 32 }}>
               <Image
                 source={{ uri: item.image }}
                 style={{ width: '100%', height: 240, borderRadius: 8 }}
@@ -121,7 +119,7 @@ export const PostsScreen = ({ navigation, route }) => {
           )}
           keyExtractor={() => nanoid()}
         />
-      </SafeAreaView>
-    </Container>
+      </View>
+    </SafeAreaView>
   );
 };
